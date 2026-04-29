@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Finance Studio Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/recharts/umd/Recharts.min.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+      body { font-family: Inter, -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", sans-serif; }
+      .glass { background: rgba(255,255,255,.78); border: 1px solid rgba(255,255,255,.72); box-shadow: 0 24px 80px rgba(17,24,39,.08); backdrop-filter: blur(24px); }
+      .dark .glass { background: rgba(17,24,39,.78); border-color: rgba(148,163,184,.16); box-shadow: 0 24px 80px rgba(0,0,0,.3); }
+    </style>
+  </head>
+  <body class="bg-[#F5F7FA] text-[#111827]">
+    <div id="root"></div>
+    <script>
+      const e = React.createElement;
+      const { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, CartesianGrid, AreaChart, Area } = Recharts;
+      const icons = lucide;
+      const usd = v => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(v || 0);
+      const state = {
+        income: 12500,
+        dark: false,
+        stats: [
+          ['Ingreso del mes', 12500, 'WalletCards', 'blue'],
+          ['Gastos totales', 4616.47, 'ReceiptText', 'blue'],
+          ['Gastos fijos', 4229.23, 'Home', 'blue'],
+          ['Variables', 186.33, 'Gauge', 'yellow'],
+          ['Suscripciones', 178.92, 'Sparkles', 'blue'],
+          ['Total deudas', 0, 'CreditCard', 'red'],
+          ['IRS mensual', 0, 'Landmark', 'red'],
+          ['Ahorro mensual', 0, 'PiggyBank', 'green'],
+          ['Dinero sobrante', 7883.53, 'CircleDollarSign', 'green'],
+          ['% ahorro', 0, 'TrendingUp', 'yellow'],
+          ['Próximo pago', 2330, 'CalendarDays', 'blue'],
+          ['Mayor fuga', 4229.23, 'AlertTriangle', 'yellow'],
+        ],
+        pie: [
+          { name: 'Fijos', value: 4229.23, color: '#007AFF' },
+          { name: 'Suscripciones', value: 178.92, color: '#38BDF8' },
+          { name: 'Variables', value: 186.33, color: '#FFCC00' },
+          { name: 'Ahorro', value: 0, color: '#34C759' },
+        ],
+        bars: [
+          { name: 'Ingreso', value: 12500 },
+          { name: 'Gastos', value: 4616.47 },
+          { name: 'Ahorro', value: 0 },
+          { name: 'Libre', value: 7883.53 },
+        ],
+        flow: [
+          { name: 'Ingreso', value: 12500 },
+          { name: 'Fijos', value: 4229 },
+          { name: 'Variables', value: 186 },
+          { name: 'Deudas', value: 0 },
+          { name: 'Ahorro', value: 0 },
+          { name: 'Libre', value: 7884 },
+        ],
+      };
+
+      function Icon({ name, size = 20 }) {
+        const C = icons[name] || icons.CircleDollarSign;
+        return e(C, { size, strokeWidth: 2.2 });
+      }
+      function Panel({ children, className = '' }) {
+        return e('section', { className: 'glass rounded-[32px] p-5 sm:p-6 ' + className }, children);
+      }
+      function Stat({ title, value, icon, tone }) {
+        const tones = {
+          blue: 'bg-blue-50 text-[#007AFF]',
+          green: 'bg-green-50 text-[#34C759]',
+          red: 'bg-red-50 text-[#FF3B30]',
+          yellow: 'bg-yellow-50 text-[#B45309]',
+        };
+        return e('div', { className: 'rounded-[26px] bg-white p-4 shadow-sm transition hover:-translate-y-1 hover:shadow-xl' },
+          e('div', { className: 'flex items-center justify-between gap-3' },
+            e('p', { className: 'text-sm font-semibold text-slate-500' }, title),
+            e('div', { className: 'grid h-10 w-10 place-items-center rounded-2xl ' + tones[tone] }, e(Icon, { name: icon }))
+          ),
+          e('p', { className: 'mt-4 truncate text-2xl font-bold tracking-tight' }, typeof value === 'number' ? usd(value) : value)
+        );
+      }
+      function App() {
+        return e('div', { className: 'min-h-screen bg-[#F5F7FA] p-4 text-[#111827] lg:p-6' },
+          e('div', { className: 'fixed inset-0 -z-10 overflow-hidden' },
+            e('div', { className: 'absolute left-0 top-0 h-80 w-80 rounded-full bg-[#007AFF]/10 blur-3xl' }),
+            e('div', { className: 'absolute bottom-0 right-0 h-96 w-96 rounded-full bg-[#34C759]/10 blur-3xl' })
+          ),
+          e('div', { className: 'mx-auto grid max-w-7xl gap-5 lg:grid-cols-[280px_1fr]' },
+            e('aside', { className: 'glass hidden rounded-[30px] p-4 lg:block' },
+              e('div', { className: 'flex items-center gap-3 px-2 py-2' },
+                e('div', { className: 'grid h-12 w-12 place-items-center rounded-2xl bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/25' }, e(Icon, { name: 'WalletCards', size: 24 })),
+                e('div', null, e('p', { className: 'text-lg font-bold' }, 'Finance Studio'), e('p', { className: 'text-xs font-semibold text-slate-500' }, 'Apple clean budget'))
+              ),
+              ['Dashboard','Movimientos','Calendario','Tarjetas','IRS','Presupuesto','Reportes','Alertas','Configuración'].map((n,i) =>
+                e('div', { key: n, className: 'mt-2 rounded-2xl px-4 py-3 text-sm font-bold ' + (i === 0 ? 'bg-[#007AFF] text-white shadow-lg shadow-[#007AFF]/25' : 'text-slate-600 hover:bg-slate-100') }, n)
+              )
+            ),
+            e('main', { className: 'space-y-5' },
+              e(Panel, null,
+                e('div', { className: 'flex flex-col gap-5 md:flex-row md:items-center md:justify-between' },
+                  e('div', null,
+                    e('p', { className: 'text-sm font-bold text-[#007AFF]' }, 'Dashboard principal'),
+                    e('h1', { className: 'mt-1 text-4xl font-bold tracking-tight' }, 'Tu dinero, claro y accionable'),
+                    e('p', { className: 'mt-2 max-w-2xl text-sm leading-6 text-slate-500' }, 'Panel completo para ingresos variables, pagos, tarjetas, IRS, ahorro, calendario y alertas.')
+                  ),
+                  e('div', { className: 'rounded-[26px] bg-slate-100 p-4' },
+                    e('p', { className: 'text-xs font-bold uppercase text-slate-500' }, 'Ingreso editable'),
+                    e('p', { className: 'text-4xl font-bold' }, usd(state.income))
+                  )
+                )
+              ),
+              e('section', { className: 'grid gap-3 sm:grid-cols-2 xl:grid-cols-4' }, state.stats.map(s => e(Stat, { key: s[0], title: s[0], value: s[1], icon: s[2], tone: s[3] }))),
+              e('section', { className: 'grid gap-4 xl:grid-cols-2' },
+                e(Panel, null,
+                  e('h2', { className: 'mb-4 text-lg font-bold' }, 'Gastos por categoría'),
+                  e('div', { className: 'h-80' }, e(ResponsiveContainer, { width: '100%', height: '100%' },
+                    e(PieChart, null,
+                      e(Pie, { data: state.pie, dataKey: 'value', nameKey: 'name', innerRadius: 58, outerRadius: 105, paddingAngle: 4 }, state.pie.map(x => e(Cell, { key: x.name, fill: x.color }))),
+                      e(Tooltip, { formatter: v => usd(v) })
+                    )
+                  ))
+                ),
+                e(Panel, null,
+                  e('h2', { className: 'mb-4 text-lg font-bold' }, 'Ingresos vs gastos'),
+                  e('div', { className: 'h-80' }, e(ResponsiveContainer, { width: '100%', height: '100%' },
+                    e(BarChart, { data: state.bars },
+                      e(CartesianGrid, { strokeDasharray: '3 3', vertical: false, stroke: '#E5E7EB' }),
+                      e(XAxis, { dataKey: 'name' }),
+                      e(YAxis, { tickFormatter: v => '$' + v }),
+                      e(Tooltip, { formatter: v => usd(v) }),
+                      e(Bar, { dataKey: 'value', fill: '#007AFF', radius: [12,12,4,4] })
+                    )
+                  ))
+                )
+              ),
+              e('section', { className: 'grid gap-4 xl:grid-cols-2' },
+                e(Panel, null,
+                  e('h2', { className: 'mb-4 text-lg font-bold' }, 'Centro de Alertas'),
+                  ['Tu ahorro está por debajo del 10%.', 'Tus suscripciones suman $178.92 al mes.', 'Gasolina se convirtió automáticamente a equivalente mensual.', 'Sobrante disponible para ahorro, deuda e inversión.'].map((t,i) =>
+                    e('div', { key: t, className: 'mb-3 rounded-[24px] bg-slate-50 p-4 text-sm font-semibold text-slate-700' }, t)
+                  )
+                ),
+                e(Panel, null,
+                  e('h2', { className: 'mb-4 text-lg font-bold' }, 'Flujo de dinero'),
+                  e('div', { className: 'h-72' }, e(ResponsiveContainer, { width: '100%', height: '100%' },
+                    e(AreaChart, { data: state.flow },
+                      e(CartesianGrid, { strokeDasharray: '3 3', vertical: false, stroke: '#E5E7EB' }),
+                      e(XAxis, { dataKey: 'name' }),
+                      e(YAxis, { tickFormatter: v => '$' + v }),
+                      e(Tooltip, { formatter: v => usd(v) }),
+                      e(Area, { type: 'monotone', dataKey: 'value', stroke: '#007AFF', strokeWidth: 3, fill: '#007AFF', fillOpacity: .16 })
+                    )
+                  ))
+                )
+              )
+            )
+          )
+        );
+      }
+      ReactDOM.createRoot(document.getElementById('root')).render(e(App));
+    </script>
+  </body>
+</html>
